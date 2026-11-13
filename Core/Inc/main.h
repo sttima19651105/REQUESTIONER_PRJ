@@ -222,6 +222,69 @@ void Error_Handler(void);
 #define	POW_LOW_S GPIOD->BSRR = GPIO_BSRR_BR8
 #define	POW_LOW_R GPIOD->BSRR = GPIO_BSRR_BS8
 
+	//- $PORT  P63=1,P64=0,P67=0,P77=0,P78=0, P79=0, P80=0, P81=0,P82=0, P87=0,P88=0,P89=0,P90=0,P91=0,P92=0, P133=0, P135=0, P136=0*							
+
+
+#define P63S GPIOE->BSRR = GPIO_BSRR_BS10   //ENABLE  PE10
+#define P63R GPIOE->BSRR = GPIO_BSRR_BR10   //ENABLE  PE10
+
+#define P64S GPIOE->BSRR = GPIO_BSRR_BS11   //RESET_OUT  PE11
+#define P64R GPIOE->BSRR = GPIO_BSRR_BR11   //RESET_OUT  PE11
+
+#define P67S GPIOE->BSRR = GPIO_BSRR_BS14   //POW_START  PE14
+#define P67R GPIOE->BSRR = GPIO_BSRR_BR14   //POW_START  PE14
+
+
+#define P77S GPIOD->BSRR = GPIO_BSRR_BS8   //POW_LOW  PD8
+#define P77R GPIOD->BSRR = GPIO_BSRR_BR8   //POW_LOW  PD8
+
+
+#define P78S GPIOD->BSRR = GPIO_BSRR_BS9   //Protection_KSHN  PD9
+#define P78R GPIOD->BSRR = GPIO_BSRR_BR9   //Protection_KSHN  PD9
+
+
+#define P79S GPIOD->BSRR = GPIO_BSRR_BS10   //Overheating  PD10 = 1
+#define P79R GPIOD->BSRR = GPIO_BSRR_BR10   //Overheating  PD10 = 0
+
+#define P80S GPIOD->BSRR = GPIO_BSRR_BS11   //Protection_CURR  PD11 = 1
+#define P80R GPIOD->BSRR = GPIO_BSRR_BR11   //Protection_CURR  PD11 = 0
+
+
+#define P81S GPIOD->BSRR = GPIO_BSRR_BS12   //Contr_50V  PD12 = 1
+#define P81R GPIOD->BSRR = GPIO_BSRR_BR12   //Contr_50V  PD12 = 0
+
+#define P82S GPIOD->BSRR = GPIO_BSRR_BS13   //Contr_n6V  PD13 = 1
+#define P82R GPIOD->BSRR = GPIO_BSRR_BR13   //Contr_n6V  PD13 = 0
+
+#define P87S GPIOG->BSRR = GPIO_BSRR_BS2   //OLED_E  PG2 = 1
+#define P87R GPIOG->BSRR = GPIO_BSRR_BR2   //OLED_E  PG2 = 0
+
+#define P88S GPIOG->BSRR = GPIO_BSRR_BS3   //Hand_Start_Tr  PG3 = 1
+#define P88R GPIOG->BSRR = GPIO_BSRR_BR3   //Hand_Start_Tr  PG3 = 0
+
+#define P89S GPIOG->BSRR = GPIO_BSRR_BS4   //Hand_Start_Tr  PG4 = 1
+#define P89R GPIOG->BSRR = GPIO_BSRR_BR4   //Hand_Start_Tr  PG4 = 1
+
+
+#define P90S GPIOG->BSRR = GPIO_BSRR_BS5   //OLED_D2  PE14
+#define P90R GPIOG->BSRR = GPIO_BSRR_BR5   //OLED_D2  PE14
+
+#define P91S GPIOG->BSRR = GPIO_BSRR_BS6   //OLED_D3  PE14
+#define P91R GPIOG->BSRR = GPIO_BSRR_BR6   //OLED_D3  PE14
+
+#define P92S GPIOG->BSRR = GPIO_BSRR_BS7   //OLED_D4  PG7 = 1
+#define P92R GPIOG->BSRR = GPIO_BSRR_BR7   //OLED_D4  PG7 = 0
+
+
+#define P133S GPIOB->BSRR = GPIO_BSRR_BS3   //Hand_Start_Tr  PE14
+#define P133R GPIOB->BSRR = GPIO_BSRR_BR3   //Hand_Start_Tr  PE14
+
+#define P135S GPIOB->BSRR = GPIO_BSRR_BS5   //Hand_Start_Tr  PE14
+#define P135R GPIOB->BSRR = GPIO_BSRR_BR5   //Hand_Start_Tr  PE14
+
+#define P136S GPIOB->BSRR = GPIO_BSRR_BS6   //Hand_Start_Tr  PE14
+#define P136R GPIOB->BSRR = GPIO_BSRR_BR6   //Hand_Start_Tr  PE14
+
 
 extern volatile  uint8_t  curent_NB_bits;
 

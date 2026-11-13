@@ -70,6 +70,8 @@ int  Count_Tic_PWR_STTART = 10;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void SystemClock_Config_1(void);
+
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_ADC1_Init(void);
@@ -341,15 +343,21 @@ int main(void)
 	//Step  1:   Output  string   $RS TXD READY1*, $RS TXD READY6*
 int i_ind;
 //				for (i_ind = 0; i_ind<20; i_ind++)
+
+NEXT_STEP_flag_1 = 0; ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! goto  
+
+
 	while( (NEXT_STEP_flag_1 == 0))
 				{
-					BUFF_ENTRY_POS[0] = sprintf((char*)RESPOND_NMEA_TRANS[0],"$RS TXD READY2*\r\n"); // USART 6
-					BUFF_ENTRY_POS[1] = sprintf((char*)RESPOND_NMEA_TRANS[1],"$RS TXD READY1*\r\n"); // USART 1
 //					COMMAND_LINE_parse((const char*)COMMAND_BUFF_NMEA);// parsing command line
 						
-			
+					BUFF_ENTRY_POS[0] = sprintf((char*)RESPOND_NMEA_TRANS[0],"$RS TXD READY2*\r\n"); // USART 6
 					HAL_UART_Transmit_IT(&huart6,(const uint8_t *) RESPOND_NMEA_TRANS[0], BUFF_ENTRY_POS[0]); //  
+					
+					
+					BUFF_ENTRY_POS[1] = sprintf((char*)RESPOND_NMEA_TRANS[1],"$RS TXD READY1*\r\n"); // USART 1
 					HAL_UART_Transmit_IT(&huart1,(const uint8_t *) RESPOND_NMEA_TRANS[1], BUFF_ENTRY_POS[1]);
+					
 					HAL_Delay(500);
 					HAL_Delay(500);
 					
@@ -361,6 +369,7 @@ int i_ind;
 				if( COMMAND_READY_Flag ) 
 				{
 					COMMAND_LINE_parse((const char*)COMMAND_BUFF_NMEA);// parsing command line
+					COMMAND_READY_Flag = 0;
 				}
 				
 				
@@ -385,11 +394,19 @@ int i_ind;
 						  NEXT_STEP_flag_1 |= 4;
 							BUFF_ENTRY_POS[1] = sprintf((char*)RESPOND_NMEA_TRANS[1],"$RS RXD READY1*\r\n"); // USART 1
 							HAL_UART_Transmit_IT(&huart1,(const uint8_t *) RESPOND_NMEA_TRANS[1], BUFF_ENTRY_POS[1]);
+							HAL_Delay(500);
+					 
+							BUFF_ENTRY_POS[1] = sprintf((char*)RESPOND_NMEA_TRANS[1],"$RS RXD READY1*\r\n"); // USART 1
+							HAL_UART_Transmit_IT(&huart1,(const uint8_t *) RESPOND_NMEA_TRANS[1], BUFF_ENTRY_POS[1]);
+					 
 					  break;
 					 case 2: //  first  command  test UART6
 							  NEXT_STEP_flag_1 |= 8;
-							BUFF_ENTRY_POS[1] = sprintf((char*)RESPOND_NMEA_TRANS[1],"$RS RXD READY2*\r\n"); // USART 1
-							HAL_UART_Transmit_IT(&huart6,(const uint8_t *) RESPOND_NMEA_TRANS[1], BUFF_ENTRY_POS[1]);
+							BUFF_ENTRY_POS[0] = sprintf((char*)RESPOND_NMEA_TRANS[0],"$RS RXD READY2*\r\n"); // USART 1
+							HAL_UART_Transmit_IT(&huart6,(const uint8_t *) RESPOND_NMEA_TRANS[0], BUFF_ENTRY_POS[0]);
+							HAL_Delay(500);
+							BUFF_ENTRY_POS[0] = sprintf((char*)RESPOND_NMEA_TRANS[0],"$RS RXD READY2*\r\n"); // USART 1
+							HAL_UART_Transmit_IT(&huart6,(const uint8_t *) RESPOND_NMEA_TRANS[0], BUFF_ENTRY_POS[0]);
 					  break;
 					 default:
 					  break;
@@ -399,36 +416,49 @@ int i_ind;
 				
 	while( ( (NEXT_STEP_flag_1 & 16) == 0))
 	{
-		
-					if( COMMAND_READY_Flag ) 
+				if( COMMAND_READY_Flag ) 
 				{
 					COMMAND_LINE_parse((const char*)COMMAND_BUFF_NMEA);// parsing command line
-				
-				
-				
-	
-				
+				}
 				 switch(NEXT_STEP_flag_1)
 				 {
-					 case 1: //  first  command  test UART1  
-						  NEXT_STEP_flag_1 |= 4;
+					 case 5: //  first  command  test UART1  
+//						  NEXT_STEP_flag_1 |= 4;
+							BUFF_ENTRY_POS[0] = sprintf((char*)RESPOND_NMEA_TRANS[0],"$RS TXD READY2*\r\n"); // USART 6
+							HAL_UART_Transmit_IT(&huart6,(const uint8_t *) RESPOND_NMEA_TRANS[0], BUFF_ENTRY_POS[0]); //  
+				  break;
+						 
+					 case 10: //  first  command  test UART6
+							BUFF_ENTRY_POS[1] = sprintf((char*)RESPOND_NMEA_TRANS[1],"$RS TXD READY1*\r\n"); // USART 1
+							HAL_UART_Transmit_IT(&huart1,(const uint8_t *) RESPOND_NMEA_TRANS[1], BUFF_ENTRY_POS[1]); //  
+				  break;
+						 
 					 case 11: // second  command  test UART1  
 							BUFF_ENTRY_POS[1] = sprintf((char*)RESPOND_NMEA_TRANS[1],"$RS RXD READY1*\r\n"); // USART 1
 							HAL_UART_Transmit_IT(&huart1,(const uint8_t *) RESPOND_NMEA_TRANS[1], BUFF_ENTRY_POS[1]);
+							HAL_Delay(500);
+					 
+							BUFF_ENTRY_POS[1] = sprintf((char*)RESPOND_NMEA_TRANS[1],"$RS RXD READY1*\r\n"); // USART 1
+							HAL_UART_Transmit_IT(&huart1,(const uint8_t *) RESPOND_NMEA_TRANS[1], BUFF_ENTRY_POS[1]);
+					 
+					 
 					    NEXT_STEP_flag_1 |= 16; 
 					  break;
-					 case 2: //  first  command  test UART6
-							  NEXT_STEP_flag_1 |= 8;
 					 case 7: //  first  command  test UART6 
 							BUFF_ENTRY_POS[1] = sprintf((char*)RESPOND_NMEA_TRANS[1],"$RS RXD READY2*\r\n"); // USART 1
 							HAL_UART_Transmit_IT(&huart6,(const uint8_t *) RESPOND_NMEA_TRANS[1], BUFF_ENTRY_POS[1]);
-					    NEXT_STEP_flag_1 |= 16; 
+							HAL_Delay(500);
+							BUFF_ENTRY_POS[1] = sprintf((char*)RESPOND_NMEA_TRANS[1],"$RS RXD READY2*\r\n"); // USART 1
+							HAL_UART_Transmit_IT(&huart6,(const uint8_t *) RESPOND_NMEA_TRANS[1], BUFF_ENTRY_POS[1]);
+
+					 NEXT_STEP_flag_1 |= 16; 
 					  break;
 					 default:
 					  break;
 				 }
 
-			 }
+								HAL_Delay(500);
+ 
 							 if( (huart1.RxState) == HAL_UART_STATE_READY)
 				{
 
@@ -442,24 +472,407 @@ int i_ind;
 					HAL_UART_Receive_IT(&huart6, (uint8_t *)COMMAND_BUFF_NMEA,1);
 				
 					}
+				
+					
 
 			 
 		 }
-					
-					while( !(NEXT_STEP_flag_2)) 
+				if( (huart1.RxState) == HAL_UART_STATE_READY)
+				{
+
+					HAL_UART_Receive_IT(&huart1, (uint8_t *)COMMAND_BUFF_NMEA,1);
+				
+					}
+				
+			 if( (huart6.RxState) == HAL_UART_STATE_READY)
+				{
+
+					HAL_UART_Receive_IT(&huart6, (uint8_t *)COMMAND_BUFF_NMEA,1);
+				
+					}
+				
+				
+					while((NEXT_STEP_flag_2) <  22) 
 					{
 						
-				if( COMMAND_READY_Flag ) 
-				{
-					COMMAND_LINE_parse((const char*)COMMAND_BUFF_NMEA);// parsing command line
+						if( COMMAND_READY_Flag ) 
+						{
+							switch(NEXT_STEP_flag_2)
+							{
+								case  0:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"GEN EN" )!= 0)
+								{
+									SystemClock_Config_1();
+									MX_GPIO_Init();
+									MX_DMA_Init();
+									MX_ADC1_Init();
+									MX_ADC2_Init();
+									MX_ADC3_Init();
+									MX_SPI1_Init();
+  MX_USART1_UART_Init();
+  MX_SPI3_Init();
+  MX_USART2_Init();
+  MX_TIM4_Init();
+  MX_TIM1_Init();
+  MX_USART6_UART_Init();
+
+										NEXT_STEP_flag_2 = 1;
+//										BUFF_ENTRY_POS[1] = sprintf((char*)RESPOND_NMEA_TRANS[1],"$GEN_EN*\r\n"); // USART 1
+//											HAL_UART_Transmit_IT(&huart1,(const uint8_t *) RESPOND_NMEA_TRANS[1], BUFF_ENTRY_POS[1]);
+//											HAL_Delay(500);
+//								COMMAND_READY_Flag = 0;
+								}
+								break;
+								case  1:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"RS RXD TEST1" )!= 0)
+								{
+											BUFF_ENTRY_POS[1] = sprintf((char*)RESPOND_NMEA_TRANS[1],"$RS RXD READY1*\r\n"); // USART 1
+											HAL_UART_Transmit_IT(&huart1,(const uint8_t *) RESPOND_NMEA_TRANS[1], BUFF_ENTRY_POS[1]);
+											HAL_Delay(500);
+					 
+											BUFF_ENTRY_POS[1] = sprintf((char*)RESPOND_NMEA_TRANS[1],"$RS RXD READY1*\r\n"); // USART 1
+											HAL_UART_Transmit_IT(&huart1,(const uint8_t *) RESPOND_NMEA_TRANS[1], BUFF_ENTRY_POS[1]);
+					 
+											BUFF_ENTRY_POS[1] = sprintf((char*)RESPOND_NMEA_TRANS[1],"$RS RXD READY1*\r\n"); // USART 1
+											HAL_UART_Transmit_IT(&huart1,(const uint8_t *) RESPOND_NMEA_TRANS[1], BUFF_ENTRY_POS[1]);
+											NEXT_STEP_flag_2 = 2;
+//									COMMAND_READY_Flag = 0;
+								}
+								break;
+								case  2:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"ALL OUT NET 1" )!= 0)
+								{
+									P63S;P64S;P67S;P77S;P78S;P79S;P80S;P81S;P82S;P87S;P88S;P89S;P90S;P91S;P92S;P133S;P135S;P136S;
+	//- $PORT  P63=1,P64=0,P67=0,P77=0,P78=0, P79=0, P80=0, P81=0,P82=0, P87=0,P88=0,P89=0,P90=0,P91=0,P92=0, P133=0, P135=0, P136=0*							
+									
+								
+											NEXT_STEP_flag_2 = 3;
+
+									
+								}
+								break;
+								case  3:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"ALL OUT NET 0" )!= 0)
+								{
+										P63R;P64R;P67R;P77R;P78R;P79R;P80R;P81R;P82R;P87R;P88R;P89R;P90R;P91R;P92R;P133R;P135R;P136R;
+											NEXT_STEP_flag_2 = 4;
+
+									
+								}
+								break;
+									case  4:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P63 1" )!= 0)
+								{
+										P63S;P64R;P67R;P77R;P78R;P79R;P80R;P81R;P82R;P87R;P88R;P89R;P90R;P91R;P92R;P133R;P135R;P136R;
+											NEXT_STEP_flag_2 = 5;
+									
+								}
+								break;
+							
+										case  5:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P64 1" )!= 0)
+								{
+										P63R;P64S;P67R;P77R;P78R;P79R;P80R;P81R;P82R;P87R;P88R;P89R;P90R;P91R;P92R;P133R;P135R;P136R;
+											NEXT_STEP_flag_2 = 6;
+								}
+								break;
+									case  6:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P67 1" )!= 0)
+								{
+										P63R;P64R;P67S;P77R;P78R;P79R;P80R;P81R;P82R;P87R;P88R;P89R;P90R;P91R;P92R;P133R;P135R;P136R;
+											NEXT_STEP_flag_2 = 7;
+								}
+								break;
+							
+									case  7:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P77 1" )!= 0)
+								{
+										P63R;P64R;P67R;P77S;P78R;P79R;P80R;P81R;P82R;P87R;P88R;P89R;P90R;P91R;P92R;P133R;P135R;P136R;
+											NEXT_STEP_flag_2 = 8;
+								}
+								break;
+									case  8:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P78 1" )!= 0)
+								{
+										P63R;P64R;P67R;P77R;P78S;P79R;P80R;P81R;P82R;P87R;P88R;P89R;P90R;P91R;P92R;P133R;P135R;P136R;
+											NEXT_STEP_flag_2 = 9;
+								}
+								break;
+
+									case  9:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P79 1" )!= 0)
+								{
+										P63R;P64R;P67R;P77R;P78R;P79S;P80R;P81R;P82R;P87R;P88R;P89R;P90R;P91R;P92R;P133R;P135R;P136R;
+											NEXT_STEP_flag_2 = 10;
+								}
+								break;
+
+									case  10:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P80 1" )!= 0)
+								{
+										P63R;P64R;P67R;P77R;P78R;P79R;P80S;P81R;P82R;P87R;P88R;P89R;P90R;P91R;P92R;P133R;P135R;P136R;
+											NEXT_STEP_flag_2 = 11;
+								}
+								break;
+								
+									case  11:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P81 1" )!= 0)
+								{
+										P63R;P64R;P67R;P77R;P78R;P79R;P80R;P81S;P82R;P87R;P88R;P89R;P90R;P91R;P92R;P133R;P135R;P136R;
+											NEXT_STEP_flag_2 = 12;
+								}
+								break;
+									case  12:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P82 1" )!= 0)
+								{
+										P63R;P64R;P67R;P77R;P78R;P79R;P80R;P81R;P82S;P87R;P88R;P89R;P90R;P91R;P92R;P133R;P135R;P136R;
+											NEXT_STEP_flag_2 = 13;
+								}
+								break;
+									case  13:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P87 1" )!= 0)
+								{
+										P63R;P64R;P67R;P77R;P78R;P79R;P80R;P81R;P82R;P87S;P88R;P89R;P90R;P91R;P92R;P133R;P135R;P136R;
+											NEXT_STEP_flag_2 = 14;
+								}
+								break;
+									case  14:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P88 1" )!= 0)
+								{
+										P63R;P64R;P67R;P77R;P78R;P79R;P80R;P81R;P82R;P87R;P88S;P89R;P90R;P91R;P92R;P133R;P135R;P136R;
+											NEXT_STEP_flag_2 = 15;
+								}
+								break;
+									case  15:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P89 1" )!= 0)
+								{
+										P63R;P64R;P67R;P77R;P78R;P79R;P80R;P81R;P82R;P87R;P88R;P89S;P90R;P91R;P92R;P133R;P135R;P136R;
+											NEXT_STEP_flag_2 = 16;
+								}
+								break;
+									case  16:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P90 1" )!= 0)
+								{
+										P63R;P64R;P67R;P77R;P78R;P79R;P80R;P81R;P82R;P87R;P88R;P89R;P90S;P91R;P92R;P133R;P135R;P136R;
+											NEXT_STEP_flag_2 = 17;
+								}
+								break;
+									case  17:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P91 1" )!= 0)
+								{
+										P63R;P64R;P67R;P77R;P78R;P79R;P80R;P81R;P82R;P87R;P88R;P89R;P90R;P91S;P92R;P133R;P135R;P136R;
+											NEXT_STEP_flag_2 = 18;
+								}
+								break;
+									case  18:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P92 1" )!= 0)
+								{
+										P63R;P64R;P67R;P77R;P78R;P79R;P80R;P81R;P82R;P87R;P88R;P89R;P90R;P91R;P92S;P133R;P135R;P136R;
+											NEXT_STEP_flag_2 = 19;
+								}
+								break;
+								
+									case  19:
+										if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P133 1" )!= 0)
+										{
+										P63R;P64R;P67R;P77R;P78R;P79R;P80R;P81R;P82R;P87R;P88R;P89R;P90R;P91R;P92R;P133S;P135R;P136R;
+											NEXT_STEP_flag_2 = 20;
+										}
+								break;
+									case  20:
+										if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P135 1" )!= 0)
+										{
+										P63R;P64R;P67R;P77R;P78R;P79R;P80R;P81R;P82R;P87R;P88R;P89R;P90R;P91R;P92R;P133R;P135S;P136R;
+											NEXT_STEP_flag_2 = 21;
+										}
+								break;
+									case  21:
+										if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P136 1" )!= 0)
+										{
+										P63R;P64R;P67R;P77R;P78R;P79R;P80R;P81R;P82R;P87R;P88R;P89R;P90R;P91R;P92R;P133R;P135R;P136S;
+											NEXT_STEP_flag_2 = 22;
+										}
+								break;
+																case  22:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P63 1" )!= 0)
+								{
+										P63R;P64S;P67S;P77S;P78S;P79S;P80S;P81S;P82S;P87S;P88S;P89S;P90S;P91S;P92S;P133S;P135S;P136S;
+											NEXT_STEP_flag_2 = 23;
+								}
+								break;
+ 
+								case  23:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P64 1" )!= 0)
+								{
+										P63S;P64R;P67S;P77S;P78S;P79S;P80S;P81S;P82S;P87S;P88S;P89S;P90S;P91S;P92S;P133S;P135S;P136S;
+											NEXT_STEP_flag_2 = 24;
+								}
+								break;
+ 
+								case  24:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P67 1" )!= 0)
+								{
+										P63S;P64S;P67R;P77S;P78S;P79S;P80S;P81S;P82S;P87S;P88S;P89S;P90S;P91S;P92S;P133S;P135S;P136S;
+											NEXT_STEP_flag_2 = 25;
+								}
+								break;
+ 
+								case  25:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P77 1" )!= 0)
+								{
+										P63S;P64S;P67S;P77R;P78S;P79S;P80S;P81S;P82S;P87S;P88S;P89S;P90S;P91S;P92S;P133S;P135S;P136S;
+											NEXT_STEP_flag_2 = 26;
+								}
+								break;
+ 
+								case  26:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P78 1" )!= 0)
+								{
+										P63S;P64S;P67S;P77S;P78R;P79S;P80S;P81S;P82S;P87S;P88S;P89S;P90S;P91S;P92S;P133S;P135S;P136S;
+											NEXT_STEP_flag_2 = 27;
+								}
+								break;
+ 
+								case  27:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P79 1" )!= 0)
+								{
+										P63S;P64S;P67S;P77S;P78S;P79R;P80S;P81S;P82S;P87S;P88S;P89S;P90S;P91S;P92S;P133S;P135S;P136S;
+											NEXT_STEP_flag_2 = 28;
+								}
+								break;
+ 
+								case  28:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P80 1" )!= 0)
+								{
+										P63S;P64S;P67S;P77S;P78S;P79S;P80R;P81S;P82S;P87S;P88S;P89S;P90S;P91S;P92S;P133S;P135S;P136S;
+											NEXT_STEP_flag_2 = 29;
+								}
+								break;
+ 
+								case  29:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P81 1" )!= 0)
+								{
+										P63S;P64S;P67S;P77S;P78S;P79S;P80S;P81R;P82S;P87S;P88S;P89S;P90S;P91S;P92S;P133S;P135S;P136S;
+											NEXT_STEP_flag_2 = 30;
+								}
+								break;
+ 
+								case  30:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P82 1" )!= 0)
+								{
+										P63S;P64S;P67S;P77S;P78S;P79S;P80S;P81S;P82R;P87S;P88S;P89S;P90S;P91S;P92S;P133S;P135S;P136S;
+											NEXT_STEP_flag_2 = 31;
+								}
+								break;
+ 
+								case  31:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P87 1" )!= 0)
+								{
+										P63S;P64S;P67S;P77S;P78S;P79S;P80S;P81S;P82S;P87R;P88S;P89S;P90S;P91S;P92S;P133S;P135S;P136S;
+											NEXT_STEP_flag_2 = 32;
+								}
+								break;
+ 
+								case  32:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P88 1" )!= 0)
+								{
+										P63S;P64S;P67S;P77S;P78S;P79S;P80S;P81S;P82S;P87S;P88R;P89S;P90S;P91S;P92S;P133S;P135S;P136S;
+											NEXT_STEP_flag_2 = 33;
+								}
+								break;
+ 
+								case  33:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P89 1" )!= 0)
+								{
+										P63S;P64S;P67S;P77S;P78S;P79S;P80S;P81S;P82S;P87S;P88S;P89R;P90S;P91S;P92S;P133S;P135S;P136S;
+											NEXT_STEP_flag_2 = 34;
+								}
+								break;
+ 
+								case  34:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P90 1" )!= 0)
+								{
+										P63S;P64S;P67S;P77S;P78S;P79S;P80S;P81S;P82S;P87S;P88S;P89S;P90R;P91S;P92S;P133S;P135S;P136S;
+											NEXT_STEP_flag_2 = 35;
+								}
+								break;
+ 
+								case  35:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P91 1" )!= 0)
+								{
+										P63S;P64S;P67S;P77S;P78S;P79S;P80S;P81S;P82S;P87S;P88S;P89S;P90S;P91R;P92S;P133S;P135S;P136S;
+											NEXT_STEP_flag_2 = 36;
+								}
+								break;
+ 
+								case  36:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P92 1" )!= 0)
+								{
+										P63S;P64S;P67S;P77S;P78S;P79S;P80S;P81S;P82S;P87S;P88S;P89S;P90S;P91S;P92R;P133S;P135S;P136S;
+											NEXT_STEP_flag_2 = 37;
+								}
+								break;
+ 
+								case  37:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P133 1" )!= 0)
+								{
+										P63S;P64S;P67S;P77S;P78S;P79S;P80S;P81S;P82S;P87S;P88S;P89S;P90S;P91S;P92S;P133R;P135S;P136S;
+											NEXT_STEP_flag_2 = 38;
+								}
+								break;
+ 
+								case  38:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P135 1" )!= 0)
+								{
+										P63S;P64S;P67S;P77S;P78S;P79S;P80S;P81S;P82S;P87S;P88S;P89S;P90S;P91S;P92S;P133S;P135R;P136S;
+											NEXT_STEP_flag_2 = 39;
+								}
+								break;
+ 
+								case  39:
+								if(strstr((const char*)COMMAND_BUFF_NMEA,"PIN P136 1" )!= 0)
+								{
+										P63S;P64S;P67S;P77S;P78S;P79S;P80S;P81S;P82S;P87S;P88S;P89S;P90S;P91S;P92S;P133S;P135S;P136R;
+											NEXT_STEP_flag_2 = 40;
+								}
+								break;
+
+
+							}
+									COMMAND_READY_Flag = 0;
 				}
-			if( (huart1.RxState) == HAL_UART_STATE_READY)
+				if( (huart1.RxState) == HAL_UART_STATE_READY)
 				{
 
 					HAL_UART_Receive_IT(&huart1, (uint8_t *)COMMAND_BUFF_NMEA,1);
 				
 					}
 				}
+				
+		
+					while( NEXT_STEP_flag_2 == 5)
+						{
+			if( (huart1.RxState) == HAL_UART_STATE_READY)
+				{
+
+					HAL_UART_Receive_IT(&huart1, (uint8_t *)COMMAND_BUFF_NMEA,1);
+				
+					}
+						
+							if( COMMAND_READY_Flag  ) 
+								{
+									if(strstr((const char*)COMMAND_BUFF_NMEA,"RS_RXD_TEST1" )!= NULL)
+										{
+										}
+									COMMAND_READY_Flag = 0;
+								}
+				}	
+						while( NEXT_STEP_flag_2 == 2) 
+					{
+					}
+				
+					
+				
 						
 					
 					
@@ -825,18 +1238,18 @@ switch(data_recieve[1] )
 		                 break ;
 								
                 case 'R': // $RS RXD TEST1*
- //                   if( strstr(data_recieve, "RS RXD TEST1")==0)
-                   if( data_recieve[2] =='S'&& data_recieve[13]=='1')								
+                    if( strstr(data_recieve, "RS RXD TEST1")!=0)
+//                   if((data_recieve[2] =='S')&& (data_recieve[12]=='1'))								
 										{
-											COMMAND_READY_Flag = 0;
-											NEXT_STEP_flag_1 |= 1;
+												NEXT_STEP_flag_1 |= 1;
 										}
-										else
-                  if( data_recieve[2] =='S'&& data_recieve[13]=='2')								
+//										else
+//                  if( (data_recieve[2] =='S')&&( data_recieve[12]=='2'))								
+											if( strstr(data_recieve, "RS RXD TEST2")!=0)		
 											{
+													NEXT_STEP_flag_1 |= 2;
+											}
 											COMMAND_READY_Flag = 0;
-											NEXT_STEP_flag_1 |= 2;
-										}
 											
 										  
                    break ;
@@ -1212,6 +1625,33 @@ void Start_PWR(void)//  процедура  запуска
   * @retval None
   */
 void SystemClock_Config(void)
+{
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+
+  /** Configure the main internal regulator output voltage
+  */
+  __HAL_RCC_PWR_CLK_ENABLE();
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
+  */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
+  RCC_OscInitStruct.PLL.PLLM = 8;
+  RCC_OscInitStruct.PLL.PLLN = 100;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 4;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+void SystemClock_Config_1(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
